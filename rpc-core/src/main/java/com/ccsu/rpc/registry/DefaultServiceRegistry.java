@@ -19,13 +19,13 @@ public class DefaultServiceRegistry implements ServerRegistry{
      *
      * 缺点：一个接口只能有一个实现类
      */
-    private final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
+    private static final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
 
     /**
      * 存储已经注册的接口实现类
      * 如 HelloServiceImpl
      */
-    private final Set<String> registeredService = ConcurrentHashMap.newKeySet();
+    private static final Set<String> registeredService = ConcurrentHashMap.newKeySet();
 
     @Override
     public synchronized <T> void register(T service) {

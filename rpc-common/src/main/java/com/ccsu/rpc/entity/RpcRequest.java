@@ -16,7 +16,6 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class RpcRequest implements Serializable {
     /**
      * 调用接口的名称
