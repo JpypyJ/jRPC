@@ -6,7 +6,7 @@ package com.ccsu.rpc.registry;
  * @author J
  */
 
-public interface ServerRegistry {
+public interface ServiceRegistry {
     /**
      * 将一个服务注册到注册表
      *

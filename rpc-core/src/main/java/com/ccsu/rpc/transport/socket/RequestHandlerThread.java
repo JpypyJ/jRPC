@@ -2,7 +2,8 @@ package com.ccsu.rpc.transport.socket;
 
 import com.ccsu.rpc.entity.RpcRequest;
 import com.ccsu.rpc.entity.RpcResponse;
-import com.ccsu.rpc.registry.ServerRegistry;
+import com.ccsu.rpc.registry.ServiceRegistry;
+import com.ccsu.rpc.transport.RequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,12 +20,12 @@ public class RequestHandlerThread implements Runnable{
     private static final Logger logger = LoggerFactory.getLogger(RequestHandlerThread.class);
     private Socket socket;
     private RequestHandler requestHandler;
-    private ServerRegistry serverRegistry;
+    private ServiceRegistry serviceRegistry;
 
-    public RequestHandlerThread(Socket socket, RequestHandler requestHandler, ServerRegistry serverRegistry) {
+    public RequestHandlerThread(Socket socket, RequestHandler requestHandler, ServiceRegistry serviceRegistry) {
         this.socket = socket;
         this.requestHandler = requestHandler;
-        this.serverRegistry = serverRegistry;
+        this.serviceRegistry = serviceRegistry;
     }
 
     @Override
@@ -38,7 +39,7 @@ public class RequestHandlerThread implements Runnable{
             String interfaceName = rpcRequest.getInterfaceName();
 
             // 得到客户端请求接口的实现类
-            Object service = serverRegistry.getService(interfaceName);
+            Object service = serviceRegistry.getService(interfaceName);
 
             // 处理器执行客户端所需要调用的方法
             Object result = requestHandler.handler(rpcRequest, service);

@@ -1,4 +1,4 @@
-package com.ccsu.rpc.transport.socket;
+package com.ccsu.rpc.transport.netty;
 
 /**
  * 服务端的通用接口

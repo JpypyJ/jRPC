@@ -1,4 +1,4 @@
-package com.ccsu.rpc.transport.socket;
+package com.ccsu.rpc.transport;
 
 import com.ccsu.rpc.entity.RpcRequest;
 

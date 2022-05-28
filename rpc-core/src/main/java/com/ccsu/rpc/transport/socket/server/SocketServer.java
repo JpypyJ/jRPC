@@ -1,9 +1,9 @@
 package com.ccsu.rpc.transport.socket.server;
 
-import com.ccsu.rpc.registry.ServerRegistry;
-import com.ccsu.rpc.transport.socket.RequestHandler;
+import com.ccsu.rpc.registry.ServiceRegistry;
+import com.ccsu.rpc.transport.RequestHandler;
 import com.ccsu.rpc.transport.socket.RequestHandlerThread;
-import com.ccsu.rpc.transport.socket.RpcServer;
+import com.ccsu.rpc.transport.netty.RpcServer;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +23,12 @@ public class SocketServer implements RpcServer {
     private static final int MAXIMUM_POOL_SIZE = 50;
     private static final int KEEP_ALIVE_TIME = 60;
     private static final int BLOCKING_QUEUE_CAPACITY = 100;
-    private final ServerRegistry serverRegistry;
+    private final ServiceRegistry serviceRegistry;
     private RequestHandler requestHandler = new RequestHandler();
 
     // 初始化线程池
-    public SocketServer(ServerRegistry serverRegistry) {
-        this.serverRegistry = serverRegistry;
+    public SocketServer(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
         BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(BLOCKING_QUEUE_CAPACITY);
         ThreadFactory threadFactory =
                 new ThreadFactoryBuilder().setNameFormat("rpc-server-pool-%d").build();
@@ -56,7 +56,7 @@ public class SocketServer implements RpcServer {
                 logger.info("客户端建立连接！ip为：{}", socket.getInetAddress());
 
                 // 调用线程池的线程处理客户端的请求
-                threadPool.execute(new RequestHandlerThread(socket, requestHandler, serverRegistry));
+                threadPool.execute(new RequestHandlerThread(socket, requestHandler, serviceRegistry));
             }
         } catch (IOException e) {
             logger.error("连接时有错误发生", e);

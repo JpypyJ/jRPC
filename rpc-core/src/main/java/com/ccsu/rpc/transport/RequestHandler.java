@@ -1,10 +1,8 @@
-package com.ccsu.rpc.transport.socket;
+package com.ccsu.rpc.transport;
 
 import com.ccsu.rpc.entity.RpcRequest;
 import com.ccsu.rpc.entity.RpcResponse;
 import com.ccsu.rpc.enums.ResponseCode;
-import com.ccsu.rpc.enums.RpcError;
-import com.ccsu.rpc.exception.RpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +36,7 @@ public class RequestHandler {
      * @param service  客户端需要调用的接口实现类
      */
     public Object invokeTargetMethod(RpcRequest rpcRequest, Object service) throws InvocationTargetException, IllegalAccessException {
-        Method method = null;
+        Method method;
         try {
             method = service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
         } catch (NoSuchMethodException e) {

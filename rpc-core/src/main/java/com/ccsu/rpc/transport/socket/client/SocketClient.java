@@ -5,7 +5,7 @@ import com.ccsu.rpc.entity.RpcResponse;
 import com.ccsu.rpc.enums.ResponseCode;
 import com.ccsu.rpc.enums.RpcError;
 import com.ccsu.rpc.exception.RpcException;
-import com.ccsu.rpc.transport.socket.RpcClient;
+import com.ccsu.rpc.transport.RpcClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

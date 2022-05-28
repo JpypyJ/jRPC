@@ -1,6 +1,7 @@
-package com.ccsu.rpc.transport.socket;
+package com.ccsu.rpc.transport.netty;
 
 import com.ccsu.rpc.entity.RpcRequest;
+import com.ccsu.rpc.transport.RpcClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultServiceRegistry implements ServerRegistry{
+public class DefaultServiceRegistry implements ServiceRegistry {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultServiceRegistry.class);
 
