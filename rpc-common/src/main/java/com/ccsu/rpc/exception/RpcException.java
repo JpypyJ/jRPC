@@ -5,7 +5,7 @@ import com.ccsu.rpc.enums.RpcError;
 /**
  * RPC 调用异常
  *
- *
+ * @author J
  */
 
 public class RpcException extends RuntimeException{
