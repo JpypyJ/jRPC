@@ -3,6 +3,7 @@ package com.ccsu.rpc.serializer;
 import com.ccsu.rpc.entity.RpcRequest;
 import com.ccsu.rpc.entity.RpcResponse;
 import com.ccsu.rpc.enums.SerializerCode;
+import com.ccsu.rpc.exception.SerializeException;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
@@ -49,7 +50,7 @@ public class KryoSerializer implements CommonSerializer{
             return output.toBytes();
         } catch (IOException e) {
             logger.error("Kryo 序列化时出现问题", e);
-            return null;
+            throw new SerializeException("Kryo 序列化时出现问题");
         }
     }
 
@@ -63,7 +64,7 @@ public class KryoSerializer implements CommonSerializer{
             return obj;
         } catch (IOException e) {
             logger.error("Kryo 反序列化时出现问题", e);
-            return null;
+            throw new SerializeException("Kryo 反序列化时出现问题");
         }
     }
 

@@ -2,6 +2,7 @@ package com.ccsu.rpc.serializer;
 
 import com.ccsu.rpc.entity.RpcRequest;
 import com.ccsu.rpc.enums.SerializerCode;
+import com.ccsu.rpc.exception.SerializeException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ public class JsonSerializer implements CommonSerializer{
             return objectMapper.writeValueAsBytes(obj);
         } catch (JsonProcessingException e) {
             logger.error("JsonSerializer 序列化时发生错误：{}", e);
-            return null;
+            throw new SerializeException("JsonSerializer 序列化时发生错误");
         }
     }
 
@@ -40,7 +41,7 @@ public class JsonSerializer implements CommonSerializer{
             return obj;
         } catch (IOException e) {
             logger.error("JsonSerializer 反序列化时发生错误：{}", e);
-            return null;
+            throw new SerializeException("JsonSerializer 反序列化时发生错误");
         }
     }
 
