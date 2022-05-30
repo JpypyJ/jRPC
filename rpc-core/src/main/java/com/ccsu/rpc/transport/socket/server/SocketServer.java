@@ -1,9 +1,10 @@
 package com.ccsu.rpc.transport.socket.server;
 
 import com.ccsu.rpc.registry.ServiceRegistry;
+import com.ccsu.rpc.serializer.CommonSerializer;
 import com.ccsu.rpc.transport.RequestHandler;
 import com.ccsu.rpc.transport.socket.RequestHandlerThread;
-import com.ccsu.rpc.transport.netty.RpcServer;
+import com.ccsu.rpc.transport.RpcServer;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ public class SocketServer implements RpcServer {
     private static final int BLOCKING_QUEUE_CAPACITY = 100;
     private final ServiceRegistry serviceRegistry;
     private RequestHandler requestHandler = new RequestHandler();
+    private CommonSerializer serializer;
 
     // 初始化线程池
     public SocketServer(ServiceRegistry serviceRegistry) {
@@ -56,10 +58,15 @@ public class SocketServer implements RpcServer {
                 logger.info("客户端建立连接！ip为：{}", socket.getInetAddress());
 
                 // 调用线程池的线程处理客户端的请求
-                threadPool.execute(new RequestHandlerThread(socket, requestHandler, serviceRegistry));
+                threadPool.execute(new RequestHandlerThread(socket, requestHandler, serviceRegistry, serializer));
             }
         } catch (IOException e) {
             logger.error("连接时有错误发生", e);
         }
+    }
+
+    @Override
+    public void setSerializer(CommonSerializer serializer) {
+        this.serializer = serializer;
     }
 }

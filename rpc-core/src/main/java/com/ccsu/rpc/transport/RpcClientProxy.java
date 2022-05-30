@@ -1,13 +1,13 @@
-package com.ccsu.rpc.transport.netty;
+package com.ccsu.rpc.transport;
 
 import com.ccsu.rpc.entity.RpcRequest;
-import com.ccsu.rpc.transport.RpcClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.UUID;
 
 /**
  * RPC 客户端动态代理
@@ -41,7 +41,8 @@ public class RpcClientProxy implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) {
         logger.info("调用方法: {}#{}", method.getDeclaringClass().getName(), method.getName());
         // 生成一个 RpcRequest 对象发送到服务端
-        RpcRequest rpcRequest = new RpcRequest(method.getDeclaringClass().getName(),
+        RpcRequest rpcRequest = new RpcRequest(UUID.randomUUID().toString(),
+                                                method.getDeclaringClass().getName(),
                                                 method.getName(),
                                                 args,
                                                 method.getParameterTypes());

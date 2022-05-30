@@ -3,13 +3,14 @@ package com.ccsu.rpc.transport.socket;
 import com.ccsu.rpc.entity.RpcRequest;
 import com.ccsu.rpc.entity.RpcResponse;
 import com.ccsu.rpc.registry.ServiceRegistry;
+import com.ccsu.rpc.serializer.CommonSerializer;
 import com.ccsu.rpc.transport.RequestHandler;
+import com.ccsu.rpc.transport.socket.util.ObjectReader;
+import com.ccsu.rpc.transport.socket.util.ObjectWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 
 /**
@@ -21,19 +22,21 @@ public class RequestHandlerThread implements Runnable{
     private Socket socket;
     private RequestHandler requestHandler;
     private ServiceRegistry serviceRegistry;
+    private CommonSerializer serializer;
 
-    public RequestHandlerThread(Socket socket, RequestHandler requestHandler, ServiceRegistry serviceRegistry) {
+    public RequestHandlerThread(Socket socket, RequestHandler requestHandler, ServiceRegistry serviceRegistry, CommonSerializer serializer) {
         this.socket = socket;
         this.requestHandler = requestHandler;
         this.serviceRegistry = serviceRegistry;
+        this.serializer = serializer;
     }
 
     @Override
     public void run() {
-        try (ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
+        try (OutputStream outputStream = socket.getOutputStream();
+             InputStream inputStream = socket.getInputStream()) {
             //接收RpcRequest对象，解析并调用
-            RpcRequest rpcRequest = (RpcRequest) inputStream.readObject();
+            RpcRequest rpcRequest = (RpcRequest) ObjectReader.readObject(inputStream);
 
             // 通过反射拿到 RpcRequest 对象中的接口
             String interfaceName = rpcRequest.getInterfaceName();
@@ -45,9 +48,9 @@ public class RequestHandlerThread implements Runnable{
             Object result = requestHandler.handler(rpcRequest, service);
 
             // 将结果返回给客户端
-            outputStream.writeObject(RpcResponse.success(result));
-            outputStream.flush();
-        } catch (IOException | ClassNotFoundException e) {
+            RpcResponse<Object> rpcResponse = RpcResponse.success(result, rpcRequest.getRequestId());
+            ObjectWriter.writeObject(outputStream, rpcResponse, serializer);
+        } catch (IOException e) {
             logger.error("调用处理器时发生错误", e);
         }
     }

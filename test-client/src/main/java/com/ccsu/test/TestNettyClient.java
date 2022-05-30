@@ -2,7 +2,8 @@ package com.ccsu.test;
 
 import com.ccsu.rpc.api.HelloMessage;
 import com.ccsu.rpc.api.HelloService;
-import com.ccsu.rpc.transport.netty.RpcClientProxy;
+import com.ccsu.rpc.serializer.HessianSerializer;
+import com.ccsu.rpc.transport.RpcClientProxy;
 import com.ccsu.rpc.transport.netty.client.NettyClient;
 
 /**
@@ -14,6 +15,7 @@ import com.ccsu.rpc.transport.netty.client.NettyClient;
 public class TestNettyClient {
     public static void main(String[] args) {
         NettyClient nettyClient = new NettyClient("localhost", 9999);
+        nettyClient.setSerializer(new HessianSerializer());
         RpcClientProxy proxy = new RpcClientProxy(nettyClient);
         HelloService helloService = proxy.getProxy(HelloService.class);
         HelloMessage message = new HelloMessage(1, "HY, I LOVE YOU!");

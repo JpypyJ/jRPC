@@ -3,6 +3,7 @@ package com.ccsu.test;
 import com.ccsu.rpc.api.HelloService;
 import com.ccsu.rpc.registry.DefaultServiceRegistry;
 import com.ccsu.rpc.registry.ServiceRegistry;
+import com.ccsu.rpc.serializer.HessianSerializer;
 import com.ccsu.rpc.transport.netty.server.NettyServer;
 
 /**
@@ -17,6 +18,7 @@ public class TestNettyServer {
         ServiceRegistry registry = new DefaultServiceRegistry();
         registry.register(helloService);
         NettyServer nettyServer = new NettyServer();
+        nettyServer.setSerializer(new HessianSerializer());
         nettyServer.start(9999);
     }
 }

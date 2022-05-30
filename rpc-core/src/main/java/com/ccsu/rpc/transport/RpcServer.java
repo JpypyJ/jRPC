@@ -1,20 +1,18 @@
 package com.ccsu.rpc.transport;
 
-import com.ccsu.rpc.entity.RpcRequest;
 import com.ccsu.rpc.serializer.CommonSerializer;
 
 /**
- * 客户端的通用接口
+ * 服务端的通用接口
  *
  * @author J
  */
-
-public interface RpcClient {
+public interface RpcServer {
 
     /**
-     * 发送 RpcRequest 消息
+     * 启动服务
      */
-    Object sendRequest(RpcRequest rpcRequest);
+    void start(int port);
 
     /**
      * 初始化序列化器

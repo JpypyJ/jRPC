@@ -18,7 +18,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
     protected void channelRead0(ChannelHandlerContext ctx, RpcResponse msg) {
         try {
             logger.info(String.format("客户端收到消息：%s", msg));
-            AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse");
+            AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse" + msg.getRequestId());
             ctx.channel().attr(key).set(msg);
             ctx.channel().close();
         } finally {
@@ -28,7 +28,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        logger.error("NettyClientHandler读取响应消息时出现错误", cause.getMessage());
+        logger.error("NettyClientHandler 读取响应消息时出现错误", cause.getMessage());
         ctx.close();
     }
 }
