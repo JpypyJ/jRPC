@@ -2,6 +2,7 @@ package com.ccsu.test;
 
 import com.ccsu.rpc.api.HelloService;
 import com.ccsu.rpc.registry.DefaultServiceRegistry;
+import com.ccsu.rpc.serializer.HessianSerializer;
 import com.ccsu.rpc.serializer.KryoSerializer;
 import com.ccsu.rpc.transport.socket.server.SocketServer;
 
@@ -17,7 +18,7 @@ public class TestSocketServer {
         DefaultServiceRegistry serviceRegistry = new DefaultServiceRegistry();
         serviceRegistry.register(helloService);
         SocketServer socketServer = new SocketServer(serviceRegistry);
-        socketServer.setSerializer(new KryoSerializer());
+        socketServer.setSerializer(new HessianSerializer());
         socketServer.start(9999);
     }
 }

@@ -5,6 +5,7 @@ import com.ccsu.rpc.serializer.CommonSerializer;
 import com.ccsu.rpc.transport.RequestHandler;
 import com.ccsu.rpc.transport.socket.RequestHandlerThread;
 import com.ccsu.rpc.transport.RpcServer;
+import com.ccsu.rpc.util.ThreadPoolFactory;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +21,6 @@ import java.util.concurrent.*;
 public class SocketServer implements RpcServer {
     private final ExecutorService threadPool;
     private static final Logger logger = LoggerFactory.getLogger(SocketServer.class);
-    private static final int CORE_POOL_SIZE = 5;
-    private static final int MAXIMUM_POOL_SIZE = 50;
-    private static final int KEEP_ALIVE_TIME = 60;
-    private static final int BLOCKING_QUEUE_CAPACITY = 100;
     private final ServiceRegistry serviceRegistry;
     private RequestHandler requestHandler = new RequestHandler();
     private CommonSerializer serializer;
@@ -31,15 +28,7 @@ public class SocketServer implements RpcServer {
     // 初始化线程池
     public SocketServer(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
-        BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(BLOCKING_QUEUE_CAPACITY);
-        ThreadFactory threadFactory =
-                new ThreadFactoryBuilder().setNameFormat("rpc-server-pool-%d").build();
-        threadPool = new ThreadPoolExecutor(CORE_POOL_SIZE,
-                                            MAXIMUM_POOL_SIZE,
-                                            KEEP_ALIVE_TIME,
-                                            TimeUnit.SECONDS,
-                                            workQueue,
-                                            threadFactory);
+        threadPool = ThreadPoolFactory.createDefaultThreadPool("socket-rpc-server");
     }
 
     /**

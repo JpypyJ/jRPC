@@ -21,6 +21,9 @@ import io.netty.util.AttributeKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
+import java.util.concurrent.atomic.AtomicReference;
+
 /**
  * NIO 的客户端
  *
@@ -64,23 +67,12 @@ public class NettyClient implements RpcClient {
             logger.error("NettyClient 未设置序列化器");
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
-        bootstrap.handler(new ChannelInitializer<SocketChannel>() {
-            @Override
-            protected void initChannel(SocketChannel ch) throws Exception {
-                ChannelPipeline pipeline = ch.pipeline();
-                pipeline.addLast(new CommonDecoder());
-                pipeline.addLast(new CommonEncoder(serializer));
-                pipeline.addLast(new NettyClientHandler());
-            }
-        });
-
+        AtomicReference<Object> result = new AtomicReference<>(null);
         try {
             // 连接服务端
-            ChannelFuture future = bootstrap.connect(host, port).sync();
-            logger.info("客户端连接到服务器 {}:{}", host, port);
-            Channel channel = future.channel();
-            if(channel != null) {
-                // 向数据读写通道写入请求信息，并异步监听
+            Channel channel = ChannelProvider.getChannel(new InetSocketAddress(host, port), serializer);
+            if(channel.isActive()) {
+            // 向数据读写通道写入请求信息，并异步监听
                 channel.writeAndFlush(rpcRequest).addListener(future1 -> {
                     if(future1.isSuccess()) {
                         logger.info(String.format("客户端发送消息：%s", rpcRequest.toString()));
@@ -93,12 +85,14 @@ public class NettyClient implements RpcClient {
                 AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse" + rpcRequest.getRequestId());
                 RpcResponse rpcResponse = channel.attr(key).get();
                 RpcMessageChecker.check(rpcRequest, rpcResponse);
-                return rpcResponse.getData();
+                result.set(rpcResponse.getData());
+            } else {
+                System.exit(0);
             }
         } catch (InterruptedException e) {
             logger.error("NettyClient 发送消息时有错误发生：", e);
         }
-        return null;
+        return result.get();
 
     }
 }
