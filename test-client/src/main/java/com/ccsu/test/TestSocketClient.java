@@ -3,7 +3,7 @@ package com.ccsu.test;
 import com.ccsu.rpc.api.HelloMessage;
 import com.ccsu.rpc.api.HelloService;
 import com.ccsu.rpc.serializer.HessianSerializer;
-import com.ccsu.rpc.serializer.KryoSerializer;
+import com.ccsu.rpc.transport.RpcClient;
 import com.ccsu.rpc.transport.RpcClientProxy;
 import com.ccsu.rpc.transport.socket.client.SocketClient;
 
@@ -15,9 +15,9 @@ import com.ccsu.rpc.transport.socket.client.SocketClient;
 
 public class TestSocketClient {
     public static void main(String[] args) {
-        SocketClient socketClient = new SocketClient("localhost", 9999);
-        socketClient.setSerializer(new HessianSerializer());
-        RpcClientProxy proxy = new RpcClientProxy(socketClient);
+        RpcClient client = new SocketClient();
+        client.setSerializer(new HessianSerializer());
+        RpcClientProxy proxy = new RpcClientProxy(client);
         HelloService helloService = proxy.getProxy(HelloService.class);
         HelloMessage message = new HelloMessage(1, "HY, I LOVE YOU!");
         String result = helloService.sayHello(message);

@@ -12,10 +12,15 @@ public interface RpcServer {
     /**
      * 启动服务
      */
-    void start(int port);
+    void start();
 
     /**
      * 初始化序列化器
      */
     void setSerializer(CommonSerializer serializer);
+
+    /**
+     * 注册服务
+     */
+    <T> void publishService(Object service, Class<T> serviceClass);
 }

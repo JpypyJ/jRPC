@@ -69,12 +69,13 @@ public class ChannelProvider {
         bootstrap.connect(inetSocketAddress).addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
                 logger.info("客户端连接成功");
-                Channel channel = future.channel();
+                channel = future.channel();
                 countDownLatch.countDown();
                 return;
             }
             if (retry == 0) {
                 logger.error("客户端连接失败：尝试次数已用完，放弃连接！");
+                countDownLatch.countDown();
                 throw new RpcException(RpcError.CLIENT_CONNECT_SERVER_FAILURE);
             }
             // 第几次重连

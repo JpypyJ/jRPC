@@ -1,8 +1,10 @@
-package com.ccsu.rpc.transport;
+package com.ccsu.rpc.handler;
 
 import com.ccsu.rpc.entity.RpcRequest;
 import com.ccsu.rpc.entity.RpcResponse;
 import com.ccsu.rpc.enums.ResponseCode;
+import com.ccsu.rpc.provider.ServiceProvider;
+import com.ccsu.rpc.provider.ServiceProviderImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,9 +19,14 @@ import java.lang.reflect.Method;
 
 public class RequestHandler {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
+    private static final ServiceProvider serviceProvider;
+    static {
+        serviceProvider = new ServiceProviderImpl();
+    }
 
-    public Object handler(RpcRequest rpcRequest, Object service) {
+    public Object handler(RpcRequest rpcRequest) {
         Object result = null;
+        Object service = RequestHandler.serviceProvider.getServiceProvider(rpcRequest.getInterfaceName());
         try {
             result = invokeTargetMethod(rpcRequest, service);
             logger.info("服务 {} 成功调用方法 {}", rpcRequest.getInterfaceName(), rpcRequest.getMethodName());

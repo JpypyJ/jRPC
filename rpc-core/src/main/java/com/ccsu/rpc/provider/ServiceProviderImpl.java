@@ -1,4 +1,4 @@
-package com.ccsu.rpc.registry;
+package com.ccsu.rpc.provider;
 
 import com.ccsu.rpc.enums.RpcError;
 import com.ccsu.rpc.exception.RpcException;
@@ -9,9 +9,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultServiceRegistry implements ServiceRegistry {
+/**
+ * 默认的服务注册表，保存服务端本地服务
+ *
+ *
+ */
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultServiceRegistry.class);
+public class ServiceProviderImpl implements ServiceProvider {
+
+    private static final Logger logger = LoggerFactory.getLogger(ServiceProviderImpl.class);
 
     /**
      * k：服务名称(实现的接口) 如 key：HelloService 的完整类名
@@ -28,7 +34,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     private static final Set<String> registeredService = ConcurrentHashMap.newKeySet();
 
     @Override
-    public synchronized <T> void register(T service) {
+    public <T> void addServiceProvider(T service) {
         String serviceName = service.getClass().getCanonicalName();
         // 如果该服务已注册，则直接返回
         if(registeredService.contains((serviceName))){
@@ -47,7 +53,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     }
 
     @Override
-    public Object getService(String serviceName) {
+    public Object getServiceProvider(String serviceName) {
         Object service = serviceMap.get(serviceName);
         if(service == null) {
             throw new RpcException(RpcError.SERVICE_NOT_FOUND);

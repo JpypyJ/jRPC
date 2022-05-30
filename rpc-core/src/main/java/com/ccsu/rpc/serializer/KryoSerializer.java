@@ -1,7 +1,5 @@
 package com.ccsu.rpc.serializer;
 
-import com.ccsu.rpc.entity.RpcRequest;
-import com.ccsu.rpc.entity.RpcResponse;
 import com.ccsu.rpc.enums.SerializerCode;
 import com.ccsu.rpc.exception.SerializeException;
 import com.esotericsoftware.kryo.Kryo;

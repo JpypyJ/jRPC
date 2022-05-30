@@ -4,7 +4,7 @@ import com.ccsu.rpc.entity.RpcRequest;
 import com.ccsu.rpc.entity.RpcResponse;
 import com.ccsu.rpc.registry.ServiceRegistry;
 import com.ccsu.rpc.serializer.CommonSerializer;
-import com.ccsu.rpc.transport.RequestHandler;
+import com.ccsu.rpc.handler.RequestHandler;
 import com.ccsu.rpc.transport.socket.util.ObjectReader;
 import com.ccsu.rpc.transport.socket.util.ObjectWriter;
 import org.slf4j.Logger;
@@ -41,11 +41,8 @@ public class RequestHandlerThread implements Runnable{
             // 通过反射拿到 RpcRequest 对象中的接口
             String interfaceName = rpcRequest.getInterfaceName();
 
-            // 得到客户端请求接口的实现类
-            Object service = serviceRegistry.getService(interfaceName);
-
             // 处理器执行客户端所需要调用的方法
-            Object result = requestHandler.handler(rpcRequest, service);
+            Object result = requestHandler.handler(rpcRequest);
 
             // 将结果返回给客户端
             RpcResponse<Object> rpcResponse = RpcResponse.success(result, rpcRequest.getRequestId());
