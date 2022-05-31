@@ -3,7 +3,6 @@ package com.ccsu.test;
 import com.ccsu.rpc.api.HelloMessage;
 import com.ccsu.rpc.api.HelloService;
 import com.ccsu.rpc.serializer.CommonSerializer;
-import com.ccsu.rpc.serializer.HessianSerializer;
 import com.ccsu.rpc.transport.RpcClient;
 import com.ccsu.rpc.transport.RpcClientProxy;
 import com.ccsu.rpc.transport.socket.client.SocketClient;

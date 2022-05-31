@@ -5,9 +5,7 @@ import com.ccsu.rpc.entity.RpcResponse;
 import com.ccsu.rpc.enums.RpcError;
 import com.ccsu.rpc.exception.RpcException;
 import com.ccsu.rpc.registry.NacosServiceDiscovery;
-import com.ccsu.rpc.registry.NacosServiceRegistry;
 import com.ccsu.rpc.registry.ServiceDiscovery;
-import com.ccsu.rpc.registry.ServiceRegistry;
 import com.ccsu.rpc.serializer.CommonSerializer;
 import com.ccsu.rpc.transport.RpcClient;
 import com.ccsu.rpc.transport.socket.util.ObjectReader;
@@ -62,7 +60,7 @@ public class SocketClient implements RpcClient {
             Object obj = ObjectReader.readObject(inputStream);
             RpcResponse rpcResponse = (RpcResponse) obj;
             RpcMessageChecker.check(rpcRequest, rpcResponse);
-            return rpcResponse.getData();
+            return rpcResponse;
         } catch (IOException e) {
             logger.error("RpcClient sendRequest读写数据错误", e);
             throw new RpcException(RpcError.SERVICE_INVOCATION_FAILURE);

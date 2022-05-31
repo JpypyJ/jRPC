@@ -1,11 +1,9 @@
 package com.ccsu.rpc.hook;
 
-import com.ccsu.rpc.util.NacosUtil;
 import com.ccsu.rpc.factory.ThreadPoolFactory;
+import com.ccsu.rpc.util.NacosUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ExecutorService;
 
 /**
  * 服务端关闭之前自动注销Nacos服务的钩子

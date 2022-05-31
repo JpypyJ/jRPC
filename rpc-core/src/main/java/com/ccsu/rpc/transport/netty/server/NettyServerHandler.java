@@ -4,8 +4,6 @@ import com.ccsu.rpc.entity.RpcRequest;
 import com.ccsu.rpc.entity.RpcResponse;
 import com.ccsu.rpc.factory.SingletonFactory;
 import com.ccsu.rpc.handler.RequestHandler;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
@@ -41,8 +39,11 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
             logger.info("服务器收到请求：{}", msg);
             Object result = requestHandler.handler(msg);
             logger.info("服务端发送响应：{}", result);
-            ChannelFuture future = ctx.writeAndFlush(RpcResponse.success(result, msg.getRequestId()));
-            future.addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
+            if (ctx.channel().isActive() && ctx.channel().isWritable()) {
+                ctx.writeAndFlush(RpcResponse.success(result, msg.getRequestId()));
+            } else {
+                logger.error("通道不可写");
+            }
         } finally {
             ReferenceCountUtil.release(msg);
         }

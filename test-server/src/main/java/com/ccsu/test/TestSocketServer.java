@@ -2,7 +2,6 @@ package com.ccsu.test;
 
 import com.ccsu.rpc.api.HelloService;
 import com.ccsu.rpc.serializer.CommonSerializer;
-import com.ccsu.rpc.serializer.HessianSerializer;
 import com.ccsu.rpc.transport.socket.server.SocketServer;
 
 /**
