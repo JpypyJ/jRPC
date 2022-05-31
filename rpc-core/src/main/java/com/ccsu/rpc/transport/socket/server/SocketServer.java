@@ -2,6 +2,7 @@ package com.ccsu.rpc.transport.socket.server;
 
 import com.ccsu.rpc.enums.RpcError;
 import com.ccsu.rpc.exception.RpcException;
+import com.ccsu.rpc.hook.ShutdownHook;
 import com.ccsu.rpc.provider.ServiceProvider;
 import com.ccsu.rpc.provider.ServiceProviderImpl;
 import com.ccsu.rpc.registry.NacosServiceRegistry;
@@ -9,7 +10,7 @@ import com.ccsu.rpc.registry.ServiceRegistry;
 import com.ccsu.rpc.serializer.CommonSerializer;
 import com.ccsu.rpc.handler.RequestHandler;
 import com.ccsu.rpc.transport.RpcServer;
-import com.ccsu.rpc.util.ThreadPoolFactory;
+import com.ccsu.rpc.factory.ThreadPoolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,8 +62,10 @@ public class SocketServer implements RpcServer {
     public void start() {
 
         // 创建 ServerSocket 对象，并绑定一个端口
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
+        try (ServerSocket serverSocket = new ServerSocket()) {
+            serverSocket.bind(new InetSocketAddress(host, port));
             logger.info("服务器正在启动！");
+            ShutdownHook.getShutdownHook().addClearAllHook();
             Socket socket;
 
             // 通过 accept 监听客户端的请求
@@ -70,7 +73,7 @@ public class SocketServer implements RpcServer {
                 logger.info("客户端连接！ip为：{}，port为：{}", socket.getInetAddress(), socket.getPort());
 
                 // 调用线程池的线程处理客户端的请求
-                threadPool.execute(new RequestHandlerThread(socket, requestHandler, serializer));
+                threadPool.execute(new SocketRequestHandlerThread(socket, requestHandler, serializer));
             }
             threadPool.shutdown();
         } catch (IOException e) {

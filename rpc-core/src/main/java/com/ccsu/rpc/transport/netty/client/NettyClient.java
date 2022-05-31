@@ -35,6 +35,7 @@ public class NettyClient implements RpcClient {
     private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
 
     private static final Bootstrap bootstrap;
+    private static final EventLoopGroup group;
     private CommonSerializer serializer;
     private final ServiceDiscovery serviceDiscovery;
 
@@ -51,7 +52,7 @@ public class NettyClient implements RpcClient {
      * 初始化Netty的客户端启动器
      */
     static {
-        EventLoopGroup group = new NioEventLoopGroup();
+        group = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
         bootstrap.group(group)
                 .channel(NioSocketChannel.class)
@@ -69,27 +70,28 @@ public class NettyClient implements RpcClient {
             // 连接服务端
             InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
             Channel channel = ChannelProvider.getChannel(inetSocketAddress, serializer);
-            if(channel.isActive()) {
-            // 向数据读写通道写入请求信息，并异步监听
-                channel.writeAndFlush(rpcRequest).addListener(future1 -> {
-                    if(future1.isSuccess()) {
-                        logger.info(String.format("客户端发送消息：%s", rpcRequest));
-                    } else {
-                        logger.error("NettyClient 发送消息时有错误发生：", future1.cause());
-                    }
-                });
-                channel.closeFuture().sync();
-                //  在 ChannelHandlerContext 中，获得响应结果并返回
-                AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse" + rpcRequest.getRequestId());
-                RpcResponse rpcResponse = channel.attr(key).get();
-                RpcMessageChecker.check(rpcRequest, rpcResponse);
-                result.set(rpcResponse.getData());
-            } else {
-                channel.close();
-                System.exit(0);
+            if(!channel.isActive()) {
+                group.shutdownGracefully();
+                return null;
             }
+
+            // 向数据读写通道写入请求信息，并异步监听
+            channel.writeAndFlush(rpcRequest).addListener(future1 -> {
+                if(future1.isSuccess()) {
+                    logger.info(String.format("客户端发送消息：%s", rpcRequest));
+                } else {
+                    logger.error("NettyClient 发送消息时有错误发生：", future1.cause());
+                }
+            });
+            channel.closeFuture().sync();
+            //  在 ChannelHandlerContext 中，获得响应结果并返回
+            AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse" + rpcRequest.getRequestId());
+            RpcResponse rpcResponse = channel.attr(key).get();
+            RpcMessageChecker.check(rpcRequest, rpcResponse);
+            result.set(rpcResponse.getData());
         } catch (InterruptedException e) {
             logger.error("NettyClient 发送消息时有错误发生：", e);
+            Thread.currentThread().interrupt();
         }
         return result.get();
 

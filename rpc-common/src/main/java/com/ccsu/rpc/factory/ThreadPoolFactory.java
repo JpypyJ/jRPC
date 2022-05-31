@@ -1,4 +1,4 @@
-package com.ccsu.rpc.util;
+package com.ccsu.rpc.factory;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 

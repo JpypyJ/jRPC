@@ -2,8 +2,9 @@ package com.ccsu.rpc.transport.netty.server;
 
 import com.ccsu.rpc.entity.RpcRequest;
 import com.ccsu.rpc.entity.RpcResponse;
+import com.ccsu.rpc.factory.SingletonFactory;
 import com.ccsu.rpc.handler.RequestHandler;
-import com.ccsu.rpc.util.ThreadPoolFactory;
+import com.ccsu.rpc.factory.ThreadPoolFactory;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -24,13 +25,13 @@ import java.util.concurrent.ExecutorService;
 public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyServerHandler.class);
-    private static RequestHandler requestHandler;
     private static final String THREAD_NAME_PREFIX = "netty-server-handler";
-    private static final ExecutorService threadPool;
+    private final RequestHandler requestHandler;
+    private final ExecutorService threadPool;
 
-    static {
-        requestHandler = new RequestHandler();
-        threadPool = ThreadPoolFactory.createDefaultThreadPool(THREAD_NAME_PREFIX);
+    public NettyServerHandler() {
+        this.requestHandler = SingletonFactory.getInstance(RequestHandler.class);
+        this.threadPool = ThreadPoolFactory.createDefaultThreadPool(THREAD_NAME_PREFIX);
     }
 
     @Override
@@ -49,7 +50,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        logger.error("NettyServerHandler处理远程调用时有错误发生：", cause.getMessage());
+        logger.error("NettyServerHandler 处理远程调用时有错误发生：", cause.getMessage());
         ctx.close();
     }
 }

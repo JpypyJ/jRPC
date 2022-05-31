@@ -4,6 +4,7 @@ import com.ccsu.rpc.codec.CommonDecoder;
 import com.ccsu.rpc.codec.CommonEncoder;
 import com.ccsu.rpc.enums.RpcError;
 import com.ccsu.rpc.exception.RpcException;
+import com.ccsu.rpc.hook.ShutdownHook;
 import com.ccsu.rpc.provider.ServiceProvider;
 import com.ccsu.rpc.provider.ServiceProviderImpl;
 import com.ccsu.rpc.registry.NacosServiceRegistry;
@@ -91,9 +92,10 @@ public class NettyServer implements RpcServer {
                     });
             // 绑定端口，启动Netty服务端，阻塞等待结果
             ChannelFuture future = serverBootstrap.bind(host, port).sync();
+            ShutdownHook.getShutdownHook().addClearAllHook();
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
-            logger.error("启动服务器时发生错误：", e);
+            logger.error("NettyServer 启动服务器时发生错误：", e);
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
