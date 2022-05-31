@@ -26,6 +26,8 @@ public interface CommonSerializer {
     Integer JSON_SERIALIZER = 1;
     Integer HESSIAN_SERIALIZER = 2;
 
+    Integer DEFAULT_SERIALIZER = KRYO_SERIALIZER;
+
     /**
      * 通过类型序号得到指定的序列化器
      */

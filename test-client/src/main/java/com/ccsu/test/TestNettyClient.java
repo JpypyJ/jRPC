@@ -7,6 +7,8 @@ import com.ccsu.rpc.transport.RpcClient;
 import com.ccsu.rpc.transport.RpcClientProxy;
 import com.ccsu.rpc.transport.netty.client.NettyClient;
 
+import java.io.IOException;
+
 /**
  * 测试Netty客户端
  *
@@ -21,5 +23,10 @@ public class TestNettyClient {
         HelloMessage message = new HelloMessage(1, "HY, I LOVE YOU!");
         String result = helloService.sayHello(message);
         System.out.println(result);
+        try {
+            System.in.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

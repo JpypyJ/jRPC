@@ -10,6 +10,7 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,8 @@ public class ChannelProvider {
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
-                ch.pipeline().addLast(new CommonEncoder(serializer))
+                ch.pipeline().addLast(new IdleStateHandler(0, 7, 0, TimeUnit.SECONDS))
+                        .addLast(new CommonEncoder(serializer))
                         .addLast(new CommonDecoder())
                         .addLast(new NettyClientHandler());
             }
