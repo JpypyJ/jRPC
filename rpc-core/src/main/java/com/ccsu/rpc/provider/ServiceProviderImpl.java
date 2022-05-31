@@ -34,22 +34,16 @@ public class ServiceProviderImpl implements ServiceProvider {
     private static final Set<String> registeredService = ConcurrentHashMap.newKeySet();
 
     @Override
-    public <T> void addServiceProvider(T service) {
-        String serviceName = service.getClass().getCanonicalName();
+    public <T> void addServiceProvider(T service, Class<T> serviceClass) {
+        String serviceName = serviceClass.getCanonicalName();
         // 如果该服务已注册，则直接返回
         if(registeredService.contains((serviceName))){
             return;
         }
         registeredService.add(serviceName);
-        // 得到该服务所有实现的接口
-        Class<?>[] interfaces = service.getClass().getInterfaces();
-        if(interfaces.length == 0) {
-            throw new RpcException(RpcError.SERVICE_NOT_IMPLEMENT_ANY_INTERFACE);
-        }
-        for (Class<?> i : interfaces) {
-            serviceMap.put(i.getCanonicalName(), service);
-        }
-        logger.info("向接口：{} 注册服务：{}", interfaces, serviceName);
+
+        serviceMap.put(serviceName, service);
+        logger.info("ServiceProviderImpl 向接口：{} 注册服务：{}", service.getClass().getInterfaces(), serviceName);
     }
 
     @Override

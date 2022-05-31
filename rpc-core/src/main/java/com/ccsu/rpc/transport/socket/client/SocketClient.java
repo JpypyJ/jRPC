@@ -4,7 +4,9 @@ import com.ccsu.rpc.entity.RpcRequest;
 import com.ccsu.rpc.entity.RpcResponse;
 import com.ccsu.rpc.enums.RpcError;
 import com.ccsu.rpc.exception.RpcException;
+import com.ccsu.rpc.registry.NacosServiceDiscovery;
 import com.ccsu.rpc.registry.NacosServiceRegistry;
+import com.ccsu.rpc.registry.ServiceDiscovery;
 import com.ccsu.rpc.registry.ServiceRegistry;
 import com.ccsu.rpc.serializer.CommonSerializer;
 import com.ccsu.rpc.transport.RpcClient;
@@ -29,7 +31,7 @@ import java.net.Socket;
 public class SocketClient implements RpcClient {
     private static final Logger logger = LoggerFactory.getLogger(SocketClient.class);
 
-    private final ServiceRegistry serviceRegistry;
+    private final ServiceDiscovery serviceDiscovery;
     private CommonSerializer serializer;
 
     @Override
@@ -38,7 +40,7 @@ public class SocketClient implements RpcClient {
     }
 
     public SocketClient() {
-        serviceRegistry = new NacosServiceRegistry();
+        serviceDiscovery = new NacosServiceDiscovery();
     }
 
     @Override
@@ -47,7 +49,7 @@ public class SocketClient implements RpcClient {
             logger.error("SocketClient 未设置序列化器");
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
-        InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
+        InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
         // 创建 Socket 对象，并绑定服务端的ip和端口
         try (Socket socket = new Socket()) {
             socket.connect(inetSocketAddress);

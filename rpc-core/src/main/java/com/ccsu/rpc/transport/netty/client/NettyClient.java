@@ -4,7 +4,9 @@ import com.ccsu.rpc.entity.RpcRequest;
 import com.ccsu.rpc.entity.RpcResponse;
 import com.ccsu.rpc.enums.RpcError;
 import com.ccsu.rpc.exception.RpcException;
+import com.ccsu.rpc.registry.NacosServiceDiscovery;
 import com.ccsu.rpc.registry.NacosServiceRegistry;
+import com.ccsu.rpc.registry.ServiceDiscovery;
 import com.ccsu.rpc.registry.ServiceRegistry;
 import com.ccsu.rpc.serializer.CommonSerializer;
 import com.ccsu.rpc.transport.RpcClient;
@@ -34,7 +36,7 @@ public class NettyClient implements RpcClient {
 
     private static final Bootstrap bootstrap;
     private CommonSerializer serializer;
-    private final ServiceRegistry serviceRegistry;
+    private final ServiceDiscovery serviceDiscovery;
 
     @Override
     public void setSerializer(CommonSerializer serializer) {
@@ -42,7 +44,7 @@ public class NettyClient implements RpcClient {
     }
 
     public NettyClient() {
-        this.serviceRegistry = new NacosServiceRegistry();
+        this.serviceDiscovery = new NacosServiceDiscovery();
     }
 
     /**
@@ -65,7 +67,7 @@ public class NettyClient implements RpcClient {
         AtomicReference<Object> result = new AtomicReference<>(null);
         try {
             // 连接服务端
-            InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
+            InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
             Channel channel = ChannelProvider.getChannel(inetSocketAddress, serializer);
             if(channel.isActive()) {
             // 向数据读写通道写入请求信息，并异步监听
@@ -83,6 +85,7 @@ public class NettyClient implements RpcClient {
                 RpcMessageChecker.check(rpcRequest, rpcResponse);
                 result.set(rpcResponse.getData());
             } else {
+                channel.close();
                 System.exit(0);
             }
         } catch (InterruptedException e) {

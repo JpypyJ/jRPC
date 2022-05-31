@@ -22,5 +22,5 @@ public interface RpcServer {
     /**
      * 注册服务
      */
-    <T> void publishService(Object service, Class<T> serviceClass);
+    <T> void publishService(T service, Class<T> serviceClass);
 }

@@ -8,7 +8,6 @@ import com.ccsu.rpc.registry.NacosServiceRegistry;
 import com.ccsu.rpc.registry.ServiceRegistry;
 import com.ccsu.rpc.serializer.CommonSerializer;
 import com.ccsu.rpc.handler.RequestHandler;
-import com.ccsu.rpc.transport.socket.RequestHandlerThread;
 import com.ccsu.rpc.transport.RpcServer;
 import com.ccsu.rpc.util.ThreadPoolFactory;
 import org.slf4j.Logger;
@@ -22,6 +21,8 @@ import java.util.concurrent.*;
 
 /**
  * Socket方式远程方法调用的服务端
+ *
+ * @author J
  */
 public class SocketServer implements RpcServer {
     private static final Logger logger = LoggerFactory.getLogger(SocketServer.class);
@@ -43,12 +44,12 @@ public class SocketServer implements RpcServer {
     }
 
     @Override
-    public <T> void publishService(Object service, Class<T> serviceClass) {
+    public <T> void publishService(T service, Class<T> serviceClass) {
         if(serializer == null) {
             logger.error("未设置序列化器");
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
-        serviceProvider.addServiceProvider(service);
+        serviceProvider.addServiceProvider(service, serviceClass);
         serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
         start();
     }
@@ -66,13 +67,14 @@ public class SocketServer implements RpcServer {
 
             // 通过 accept 监听客户端的请求
             while((socket = serverSocket.accept()) != null) {
-                logger.info("客户端建立连接！ip为：{}", socket.getInetAddress());
+                logger.info("客户端连接！ip为：{}，port为：{}", socket.getInetAddress(), socket.getPort());
 
                 // 调用线程池的线程处理客户端的请求
-                threadPool.execute(new RequestHandlerThread(socket, requestHandler, serviceRegistry, serializer));
+                threadPool.execute(new RequestHandlerThread(socket, requestHandler, serializer));
             }
+            threadPool.shutdown();
         } catch (IOException e) {
-            logger.error("连接时有错误发生", e);
+            logger.error("SocketServer 连接时有错误发生", e);
         }
     }
 

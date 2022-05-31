@@ -1,4 +1,4 @@
-package com.ccsu.rpc.transport.socket;
+package com.ccsu.rpc.transport.socket.server;
 
 import com.ccsu.rpc.entity.RpcRequest;
 import com.ccsu.rpc.entity.RpcResponse;
@@ -21,13 +21,11 @@ public class RequestHandlerThread implements Runnable{
     private static final Logger logger = LoggerFactory.getLogger(RequestHandlerThread.class);
     private Socket socket;
     private RequestHandler requestHandler;
-    private ServiceRegistry serviceRegistry;
     private CommonSerializer serializer;
 
-    public RequestHandlerThread(Socket socket, RequestHandler requestHandler, ServiceRegistry serviceRegistry, CommonSerializer serializer) {
+    public RequestHandlerThread(Socket socket, RequestHandler requestHandler, CommonSerializer serializer) {
         this.socket = socket;
         this.requestHandler = requestHandler;
-        this.serviceRegistry = serviceRegistry;
         this.serializer = serializer;
     }
 
@@ -48,7 +46,7 @@ public class RequestHandlerThread implements Runnable{
             RpcResponse<Object> rpcResponse = RpcResponse.success(result, rpcRequest.getRequestId());
             ObjectWriter.writeObject(outputStream, rpcResponse, serializer);
         } catch (IOException e) {
-            logger.error("调用处理器时发生错误", e);
+            logger.error("RequestHandlerThread 调用处理器时发生错误", e);
         }
     }
 }
