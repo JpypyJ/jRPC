@@ -28,6 +28,7 @@ public class CommonDecoder extends ReplayingDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> list) {
+        logger.info("正在解码...");
         // 读取数据包类型
         int magic = in.readInt();
         if(magic != MAGIC_NUMBER) {

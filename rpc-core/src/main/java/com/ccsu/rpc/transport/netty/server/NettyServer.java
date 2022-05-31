@@ -41,16 +41,18 @@ public class NettyServer implements RpcServer {
     private final ServiceProvider serviceProvider;
 
     public NettyServer(String host, int port) {
+        this(host, port, DEFAULT_SERIALIZER);
+    }
+
+    public NettyServer(String host, int port, Integer serializer) {
         this.host = host;
         this.port = port;
         this.serviceRegistry = new NacosServiceRegistry();
         this.serviceProvider = new ServiceProviderImpl();
+        this.serializer = CommonSerializer.getSerializerByCode(serializer);
     }
 
-    @Override
-    public void setSerializer(CommonSerializer serializer) {
-        this.serializer = serializer;
-    }
+
 
     @Override
     public <T> void publishService(T service, Class<T> serviceClass) {
@@ -65,6 +67,7 @@ public class NettyServer implements RpcServer {
 
     @Override
     public void start() {
+        ShutdownHook.getShutdownHook().addClearAllHook();
         // 用于处理客户端的连接
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         // 处理后续客户端的IO事件
@@ -92,7 +95,6 @@ public class NettyServer implements RpcServer {
                     });
             // 绑定端口，启动Netty服务端，阻塞等待结果
             ChannelFuture future = serverBootstrap.bind(host, port).sync();
-            ShutdownHook.getShutdownHook().addClearAllHook();
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             logger.error("NettyServer 启动服务器时发生错误：", e);

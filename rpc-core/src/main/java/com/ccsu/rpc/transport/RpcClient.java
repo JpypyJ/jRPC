@@ -19,5 +19,5 @@ public interface RpcClient {
     /**
      * 初始化序列化器
      */
-    void setSerializer(CommonSerializer serializer);
+    int DEFAULT_SERIALIZER = CommonSerializer.KRYO_SERIALIZER;
 }

@@ -1,7 +1,7 @@
 package com.ccsu.test;
 
 import com.ccsu.rpc.api.HelloService;
-import com.ccsu.rpc.serializer.HessianSerializer;
+import com.ccsu.rpc.serializer.CommonSerializer;
 import com.ccsu.rpc.transport.netty.server.NettyServer;
 
 /**
@@ -13,8 +13,7 @@ import com.ccsu.rpc.transport.netty.server.NettyServer;
 public class TestNettyServer {
     public static void main(String[] args) {
         HelloService helloService = new HelloServiceImpl();
-        NettyServer server = new NettyServer("127.0.0.1", 9999);
-        server.setSerializer(new HessianSerializer());
+        NettyServer server = new NettyServer("127.0.0.1", 9999, CommonSerializer.HESSIAN_SERIALIZER);
         server.publishService(helloService, HelloService.class);
     }
 }

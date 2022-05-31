@@ -6,6 +6,8 @@ import com.ccsu.rpc.serializer.CommonSerializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 通用的编码器
@@ -14,6 +16,9 @@ import io.netty.handler.codec.MessageToByteEncoder;
  */
 
 public class CommonEncoder extends MessageToByteEncoder {
+
+    private static final Logger logger = LoggerFactory.getLogger(CommonEncoder.class);
+
     // 魔数
     private static final int MAGIC_NUMBER = 0xCAFEBABE;
 
@@ -27,6 +32,7 @@ public class CommonEncoder extends MessageToByteEncoder {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) {
+        logger.info("正在编码...");
         // 写入魔数
         out.writeInt(MAGIC_NUMBER);
         // 写入调用类型，请求 or 响应

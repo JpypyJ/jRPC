@@ -22,6 +22,10 @@ public interface CommonSerializer {
      */
     int getCode();
 
+    Integer KRYO_SERIALIZER = 0;
+    Integer JSON_SERIALIZER = 1;
+    Integer HESSIAN_SERIALIZER = 2;
+
     /**
      * 通过类型序号得到指定的序列化器
      */
