@@ -22,11 +22,9 @@ public class TestNettyClient {
         HelloService helloService = proxy.getProxy(HelloService.class);
         HelloMessage message = new HelloMessage(1, "HY, I LOVE YOU!");
         String result = helloService.sayHello(message);
+        HelloMessage message2 = new HelloMessage(2, "HY, I LOVE YOU!");
+        String result2 = helloService.sayHello(message2);
         System.out.println(result);
-        try {
-            System.in.read();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        System.out.println(result2);
     }
 }
