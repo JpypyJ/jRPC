@@ -1,5 +1,6 @@
 package com.ccsu.test;
 
+import com.ccsu.rpc.api.ByeService;
 import com.ccsu.rpc.api.HelloMessage;
 import com.ccsu.rpc.api.HelloService;
 import com.ccsu.rpc.serializer.CommonSerializer;
@@ -21,5 +22,8 @@ public class TestSocketClient {
         HelloMessage message = new HelloMessage(1, "HY, I LOVE YOU!");
         String result = helloService.sayHello(message);
         System.out.println(result);
+
+        ByeService byeService = proxy.getProxy(ByeService.class);
+        System.out.println(byeService.bye("Netty"));
     }
 }

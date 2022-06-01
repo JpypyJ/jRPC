@@ -9,7 +9,7 @@ public interface ServiceProvider {
     /**
      * 保存服务提供者
      */
-    <T> void addServiceProvider(T service, Class<T> serviceClass);
+    <T> void addServiceProvider(T service, String serviceName);
 
     /**
      * 获取服务提供者

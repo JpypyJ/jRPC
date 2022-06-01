@@ -2,15 +2,11 @@ package com.ccsu.rpc.transport.netty.server;
 
 import com.ccsu.rpc.codec.CommonDecoder;
 import com.ccsu.rpc.codec.CommonEncoder;
-import com.ccsu.rpc.enums.RpcError;
-import com.ccsu.rpc.exception.RpcException;
 import com.ccsu.rpc.hook.ShutdownHook;
-import com.ccsu.rpc.provider.ServiceProvider;
 import com.ccsu.rpc.provider.ServiceProviderImpl;
 import com.ccsu.rpc.registry.NacosServiceRegistry;
-import com.ccsu.rpc.registry.ServiceRegistry;
 import com.ccsu.rpc.serializer.CommonSerializer;
-import com.ccsu.rpc.transport.RpcServer;
+import com.ccsu.rpc.transport.AbstractRpcServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -19,10 +15,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -31,16 +24,10 @@ import java.util.concurrent.TimeUnit;
  * @author J
  */
 
-public class NettyServer implements RpcServer {
+public class NettyServer extends AbstractRpcServer {
 
-    private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
     private CommonSerializer serializer;
 
-    private final String host;
-    private final int port;
-
-    private final ServiceRegistry serviceRegistry;
-    private final ServiceProvider serviceProvider;
 
     public NettyServer(String host, int port) {
         this(host, port, DEFAULT_SERIALIZER);
@@ -52,19 +39,7 @@ public class NettyServer implements RpcServer {
         this.serviceRegistry = new NacosServiceRegistry();
         this.serviceProvider = new ServiceProviderImpl();
         this.serializer = CommonSerializer.getSerializerByCode(serializer);
-    }
-
-
-
-    @Override
-    public <T> void publishService(T service, Class<T> serviceClass) {
-        if(serializer == null) {
-            logger.error("NettyServer 未设置序列化器");
-            throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
-        }
-        serviceProvider.addServiceProvider(service, serviceClass);
-        serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
-        start();
+        scanServices();
     }
 
     @Override

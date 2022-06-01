@@ -1,5 +1,6 @@
 package com.ccsu.test;
 
+import com.ccsu.rpc.annotation.Service;
 import com.ccsu.rpc.api.HelloMessage;
 import com.ccsu.rpc.api.HelloService;
 import org.slf4j.Logger;
@@ -10,7 +11,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author J
  */
-
+@Service
 public class HelloServiceImpl2 implements HelloService {
 
     /**
@@ -21,6 +22,6 @@ public class HelloServiceImpl2 implements HelloService {
     @Override
     public String sayHello(HelloMessage msg) {
         logger.info("接收到来自客户端的消息：{}", msg.getMessage());
-        return "本次处理来自Socket服务";
+        return "这是Impl2方法";
     }
 }
